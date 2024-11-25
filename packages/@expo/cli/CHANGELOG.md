@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix a build error when running `expo run:ios` consecutively without closing the app.
+
 ### 💡 Others
 
 ## 0.21.7 — 2024-11-20
