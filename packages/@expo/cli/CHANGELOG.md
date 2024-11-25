@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix a build error when running `expo run:ios` consecutively without closing the app.
+- Fix a build error when running `expo run:ios` consecutively without closing the app. ([#33236](https://github.com/expo/expo/pull/33236) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
