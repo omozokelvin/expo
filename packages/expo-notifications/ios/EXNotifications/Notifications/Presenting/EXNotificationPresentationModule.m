@@ -2,17 +2,21 @@
 
 #import <EXNotifications/EXNotificationPresentationModule.h>
 
-#import <EXNotifications/EXNotificationBuilder.h>
 #import <EXNotifications/EXNotificationSerializer.h>
 #import <EXNotifications/EXNotificationCenterDelegate.h>
 
-@interface EXNotificationPresentationModule ()
+#if __has_include(<EXNotifications/EXNotifications-Swift.h>)
+#import <EXNotifications/EXNotifications-Swift.h>
+#else
+#import "EXNotifications-Swift.h"
+#endif
 
-@property (nonatomic, weak) id<EXNotificationBuilder> notificationBuilder;
+@interface EXNotificationPresentationModule ()
 
 // Remove once presentNotificationAsync is removed
 @property (nonatomic, strong) NSCountedSet<NSString *> *presentedNotifications;
 @property (nonatomic, weak) id<EXNotificationCenterDelegate> notificationCenterDelegate;
+@property (nonatomic, strong) EXNotificationBuilder *builder;
 
 @end
 
@@ -25,6 +29,7 @@ EX_EXPORT_MODULE(ExpoNotificationPresenter);
 {
   if (self = [super init]) {
     _presentedNotifications = [NSCountedSet set];
+    self.builder = [EXNotificationBuilder new];
   }
   return self;
 }
@@ -38,7 +43,12 @@ EX_EXPORT_METHOD_AS(presentNotificationAsync,
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  UNNotificationContent *content = [_notificationBuilder notificationContentFromRequest:notificationSpec];
+  NSError *error = nil;
+  UNNotificationContent *content = [self.builder notificationContentFromRequest:notificationSpec error:&error];
+  if (error) {
+    NSString *message = [NSString stringWithFormat:@"Notification could not have been presented: %@", error.description];
+    reject(@"ERR_NOTIF_PRESENT", message, error);
+  }
   UNNotificationTrigger *trigger = nil;
   UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:trigger];
   [_presentedNotifications addObject:identifier];
@@ -86,8 +96,6 @@ EX_EXPORT_METHOD_AS(dismissAllNotificationsAsync,
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _notificationBuilder = [moduleRegistry getModuleImplementingProtocol:@protocol(EXNotificationBuilder)];
-
   // Remove once presentNotificationAsync is removed
   id<EXNotificationCenterDelegate> notificationCenterDelegate = (id<EXNotificationCenterDelegate>)[moduleRegistry getSingletonModuleForName:@"NotificationCenterDelegate"];
   [notificationCenterDelegate addDelegate:self];
