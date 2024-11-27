@@ -701,5 +701,9 @@ export type NotificationCategoryOptions = {
     allowAnnouncement?: boolean;
 };
 export type MaybeNotificationResponse = NotificationResponse | null | undefined;
-export { PermissionExpiration, PermissionResponse, EventSubscription, PermissionStatus, } from 'expo-modules-core';
+export { PermissionExpiration, PermissionResponse, 
+/**
+ * @deprecated use the `Subscription` type instead
+ * */
+EventSubscription, EventSubscription as Subscription, PermissionStatus, } from 'expo-modules-core';
 //# sourceMappingURL=Notifications.types.d.ts.map

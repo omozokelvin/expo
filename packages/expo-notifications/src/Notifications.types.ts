@@ -768,6 +768,10 @@ export type MaybeNotificationResponse = NotificationResponse | null | undefined;
 export {
   PermissionExpiration,
   PermissionResponse,
+  /**
+   * @deprecated use the `Subscription` type instead
+   * */
   EventSubscription,
+  EventSubscription as Subscription,
   PermissionStatus,
 } from 'expo-modules-core';
